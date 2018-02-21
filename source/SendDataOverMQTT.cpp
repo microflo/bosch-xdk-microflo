@@ -388,7 +388,7 @@ static void HandleEventIncomingData(
     char published_data_buffer[COMMON_BUFFER_SIZE] = {0};
     static int incoming_message_count = 0;
 
-    strncpy(published_data_buffer, (const char *)publishData.sizeof(published_data_buffer));
+    strncpy(published_data_buffer, (const char *)publishData.payload ,sizeof(published_data_buffer));
     strncpy(published_topic_buffer, publishData.topic.start, sizeof(published_topic_buffer));
 
     printf("received #%d : %s : %s \n\r",
