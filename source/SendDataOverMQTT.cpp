@@ -307,10 +307,8 @@ static void RunMicroflo(TimerHandle_t pxTimer)
 
     printf("%s", "microflo run tick");
 
-#if 0
-    microflo_transport->runTick();
-    microflo_network->runTick();
-#endif
+    transport.runTick();
+    network.runTick();
 }
 
 static void CreateMicrofloTimer(void)
