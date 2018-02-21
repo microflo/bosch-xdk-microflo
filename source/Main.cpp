@@ -35,6 +35,8 @@
 */
 /*----------------------------------------------------------------------------*/
 
+extern "C" {
+
 #include "XDKAppInfo.h"
 #undef BCDS_MODULE_ID
 #define BCDS_MODULE_ID  XDK_APP_MODULE_ID_MAIN
@@ -50,6 +52,8 @@
 #include "task.h"
 
 #include "SendDataOverMQTT.h"
+
+}
 
 /* own header files */
 

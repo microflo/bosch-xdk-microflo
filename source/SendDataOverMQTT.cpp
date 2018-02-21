@@ -37,6 +37,8 @@
 
 /* module includes ********************************************************** */
 
+extern "C" {
+
 #include "XDKAppInfo.h"
 #undef BCDS_MODULE_ID
 #define BCDS_MODULE_ID  XDK_APP_MODULE_ID_SENDDATAOVERMQTT
@@ -62,6 +64,8 @@
 #include "Serval_Mqtt.h"
 
 #include "XdkSensorHandle.h"
+
+}
 
 /* constant definitions ***************************************************** */
 
@@ -544,6 +548,8 @@ static void InitializeExample(void)
     }
 }
 
+extern "C" {
+
 void AppInitSystem(void * cmdProcessorHandle, uint32_t param2)
 {
     if (cmdProcessorHandle == NULL)
@@ -564,6 +570,8 @@ void AppInitSystem(void * cmdProcessorHandle, uint32_t param2)
         printf("Connect Failed, so example is not started\n\r");
         Retcode_RaiseError(connect_rc);
     }
+
+}
 
 }
 

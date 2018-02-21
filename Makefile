@@ -13,7 +13,7 @@ export BCDS_APP_SOURCE_DIR = $(BCDS_APP_DIR)/source
 
 #Please refer BCDS_CFLAGS_COMMON variable in application.mk file
 #and if any addition flags required then add that flags only in the below macro 
-#export BCDS_CFLAGS_COMMON = 
+export BCDS_CFLAGS_COMMON = -fno-rtti -fno-exceptions
 
 export BCDS_TARGET_BOARD = BSP_XDK110
 #List all the application header file under variable BCDS_XDK_INCLUDES
@@ -39,7 +39,7 @@ clean_Libraries:
 	$(MAKE) -C $(BCDS_BASE_DIR)/xdk110/Common -f application.mk clean_libraries
 	
 flash_debug_bin: 
-	$(MAKE) -C $(BCDS_BASE_DIR)/xdk110/Common -f application.mk flash_debug_bin
+	sx binary.bin | socat FILE:/dev/ttyACM0,b115200,raw -
 	
 flash_release_bin: 
 	$(MAKE) -C $(BCDS_BASE_DIR)/xdk110/Common -f application.mk flash_release_bin

@@ -115,7 +115,12 @@ enum App_Retcode_E
  *
  * @param[in] param2  Currently not used will be used in future
  */
+
+extern "C" {
+
 void AppInitSystem(void * CmdProcessorHandle, uint32_t param2);
+
+}
 
 #endif /* SENDDATAOVERMQTT_H_ */
 
