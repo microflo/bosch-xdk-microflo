@@ -1,2 +1,4 @@
 
-s(OutputNumber) -> b(Forward) -> c(Forward) -> p(Print)
+s(Forward) -> b(Forward) -> c(Forward) -> p(Print)
+
+'123' -> s

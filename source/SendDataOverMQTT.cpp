@@ -355,9 +355,17 @@ static void HandleEventIncomingData(MqttPublishData_T publishData)
     strncpy(published_data_buffer, (const char *)publishData.payload ,sizeof(published_data_buffer));
     strncpy(published_topic_buffer, publishData.topic.start, sizeof(published_topic_buffer));
 
-    printf("received #%d : %s : %s \n\r",
-            incoming_message_count, published_topic_buffer, published_data_buffer);
+    printf("received #%d : %s : %d %s \n\r",
+            incoming_message_count, published_topic_buffer,
+            publishData.length, published_data_buffer
+    );
     incoming_message_count++;
+
+    // FIXME: don't assume its on the microflo topic
+    for (unsigned int i=0; i<publishData.length; i++) {
+        unsigned char c = publishData.payload[i];
+        controller.parseByte(c);
+    }
 }
 
 
