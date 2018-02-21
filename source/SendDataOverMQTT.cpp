@@ -75,6 +75,17 @@ extern "C" {
 
 /* local variables ********************************************************** */
 
+#if 0
+NullIO io;
+NullHostTransport transport;
+FixedMessageQueue queue;
+Network network(&io, &queue);
+HostCommunication controller;
+
+static Network *microflo_network = 0;
+static HostTransport *microflo_transport = 0;
+#endif
+
 static CmdProcessor_T *AppCmdProcessor;
 static CmdProcessor_T CmdProcessorHandleServalPAL;
 static MqttSession_T Session;
@@ -84,6 +95,7 @@ static char PublishBuffer[PUBLISH_BUFFER_SIZE];
 static uint8_t PublishInProgress = 0;
 
 static TimerHandle_t PublishTimerHandle;
+//static TimerHandle_t MicrofloTimerHandle;
 
 static const char *PublishTopic = TOPIC;
 static StringDescr_T PublishTopicDescription;
@@ -94,6 +106,7 @@ static Mqtt_qos_t Qos[1];
 static char MqttBroker[50];
 static const char MqttBrokerAddressFormat[50] = "mqtt://%s:%d";
 static const char *DeviceName = DEVICE_NAME;
+
 
 /* global variables ********************************************************* */
 
@@ -289,6 +302,40 @@ static void CreateAndStartPublishingTimer(void)
     }
 }
 
+#if 0
+static void RunMicroflo(TimerHandle_t pxTimer)
+{
+    BCDS_UNUSED(pxTimer);
+
+    printf("%s", "microflo run tick");
+
+#if 0
+    microflo_transport->runTick();
+    microflo_network->runTick();
+#endif
+}
+
+static void CreateMicrofloTimer(void)
+{
+    MicrofloTimerHandle = xTimerCreate(
+            (const char * const ) "MicroFlo Timer",
+            (100/portTICK_RATE_MS),
+            pdTRUE,
+            NULL,
+            RunMicroflo);
+
+    if(NULL == MicrofloTimerHandle)
+    {
+        printf("microflo xTimerCreate is failed \n\r");
+        Retcode_RaiseError(RETCODE(RETCODE_SEVERITY_FATAL, RETCODE_OUT_OF_RESOURCES));
+    }
+    else if ( pdFAIL == xTimerStart(MicrofloTimerHandle, 10000))
+    {
+        printf("microflo xTimerStart is failed \n\r");
+        Retcode_RaiseError(RETCODE(RETCODE_SEVERITY_FATAL, RETCODE_TIMER_START_FAIL));
+    }
+}
+#endif
 
 /**
  * @brief Mqtt connection event handler.
@@ -556,24 +603,17 @@ extern "C" {
 
 void AppInitSystem(void * cmdProcessorHandle, uint32_t param2)
 {
-    NullIO io;
-    NullHostTransport transport;
-    FixedMessageQueue queue;
-    Network network(&io, &queue);
-    HostCommunication controller;
-    transport.setup(&io, &controller);
-    controller.setup(&network, &transport);
 
 #if 0
-    MICROFLO_LOAD_STATIC_GRAPH((&controller), graph);
+    transport.setup(&io, &controller);
+    controller.setup(&network, &transport);
+    microflo_network = &network; 
+    microflo_transport = &transport;
 
-    while (1) {
-        transport.runTick();
-        network.runTick();
-        // HACK: do some sane scheduling instead
-        usleep(1);
-    }
+
+    MICROFLO_LOAD_STATIC_GRAPH((&controller), graph);
 #endif
+
 
     if (cmdProcessorHandle == NULL)
     {
@@ -594,8 +634,10 @@ void AppInitSystem(void * cmdProcessorHandle, uint32_t param2)
         Retcode_RaiseError(connect_rc);
     }
 
+
+    //CreateMicrofloTimer();
 }
 
-}
+} // end extern "C"
 
 /** ************************************************************************* */
