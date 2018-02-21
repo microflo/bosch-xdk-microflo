@@ -27,7 +27,6 @@ export BCDS_XDK_INCLUDES = \
 #List all the application source file under variable BCDS_XDK_APP_SOURCE_FILES in a similar pattern as below
 export BCDS_XDK_APP_SOURCE_FILES = \
 	$(BCDS_APP_SOURCE_DIR)/Main.cpp \
-	$(BCDS_APP_SOURCE_DIR)/SendDataOverMQTT.cpp
 	
 .PHONY: clean debug release flash_debug_bin flash_release_bin
 

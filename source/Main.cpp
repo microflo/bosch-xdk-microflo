@@ -129,3 +129,6 @@ int main(void)
     /* start scheduler */
     vTaskStartScheduler();
 }
+
+#include "SendDataOverMQTT.cpp"
+
