@@ -39,7 +39,8 @@ clean_Libraries:
 	$(MAKE) -C $(BCDS_BASE_DIR)/xdk110/Common -f application.mk clean_libraries
 	
 flash_debug_bin: 
-	sx binary.bin | socat FILE:/dev/ttyACM0,b115200,raw -
+	java -jar ./tools/create_fota_container.jar -i debug/${BCDS_APP_NAME}.bin -fv 00000000 -hv 0100 -pc 0100 -pv 0000
+	./tools/xdk-flash /dev/ttyACM0 debug/${BCDS_APP_NAME}.bin
 	
 flash_release_bin: 
 	$(MAKE) -C $(BCDS_BASE_DIR)/xdk110/Common -f application.mk flash_release_bin

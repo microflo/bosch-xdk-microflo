@@ -1,0 +1,35 @@
+#!/bin/bash
+XDK="$1"
+FILE="$2"
+
+if [ $# -ne 2 ]; then
+	echo "usage: $0 <xdk tty> <firmware file>"
+	exit -4
+fi
+
+if [ ! -e "$XDK" ]; then
+	echo "$XDK does not exist"
+	exit -1
+fi
+
+if [ ! -e "$FILE" ]; then
+	echo "$FILE does not exist"
+	exit -2
+fi
+
+if [ ! -x "$(which sx)" ]; then
+	echo "sx program not found"
+	exit -3
+fi
+
+echo "Jumping into bootloader"
+echo -n "#reBoot\$" > "$XDK"
+sleep 2
+
+echo "Flashing $FILE to $XDK (may take a few seconds to start)"
+echo -n u > "$XDK"
+sx "$FILE" < "$XDK" > "$XDK"
+sleep 1
+
+echo "Jumping into application"
+echo -n b > "$XDK"
