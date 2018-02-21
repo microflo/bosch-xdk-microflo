@@ -67,13 +67,23 @@ extern "C" {
 
 }
 
+
+
 #include <microflo.h>
 #include <microflo.cpp>
 #include <io.hpp> // TEMP: using NullIO
 
+
 /* constant definitions ***************************************************** */
 
 /* local variables ********************************************************** */
+
+NullIO io;
+NullHostTransport transport;
+FixedMessageQueue queue;
+Network network(&io, &queue);
+HostCommunication controller;
+
 
 static CmdProcessor_T *AppCmdProcessor;
 static CmdProcessor_T CmdProcessorHandleServalPAL;
@@ -556,11 +566,7 @@ extern "C" {
 
 void AppInitSystem(void * cmdProcessorHandle, uint32_t param2)
 {
-    NullIO io;
-    NullHostTransport transport;
-    FixedMessageQueue queue;
-    Network network(&io, &queue);
-    HostCommunication controller;
+
     transport.setup(&io, &controller);
     controller.setup(&network, &transport);
 

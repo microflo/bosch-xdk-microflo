@@ -35,6 +35,7 @@ clean:
 	$(MAKE) -C $(BCDS_BASE_DIR)/xdk110/Common -f application.mk clean
 
 debug: 
+	touch source/Main.cpp
 	$(MAKE) -C $(BCDS_BASE_DIR)/xdk110/Common -f application.mk debug
 	
 release: 
