@@ -67,6 +67,10 @@ extern "C" {
 
 }
 
+#include <microflo.h>
+#include <microflo.cpp>
+#include <io.hpp> // TEMP: using NullIO
+
 /* constant definitions ***************************************************** */
 
 /* local variables ********************************************************** */
@@ -552,6 +556,25 @@ extern "C" {
 
 void AppInitSystem(void * cmdProcessorHandle, uint32_t param2)
 {
+    NullIO io;
+    NullHostTransport transport;
+    FixedMessageQueue queue;
+    Network network(&io, &queue);
+    HostCommunication controller;
+    transport.setup(&io, &controller);
+    controller.setup(&network, &transport);
+
+#if 0
+    MICROFLO_LOAD_STATIC_GRAPH((&controller), graph);
+
+    while (1) {
+        transport.runTick();
+        network.runTick();
+        // HACK: do some sane scheduling instead
+        usleep(1);
+    }
+#endif
+
     if (cmdProcessorHandle == NULL)
     {
         printf("Command processor handle is null \n\r");
