@@ -222,10 +222,16 @@ static void InitEnvironmentalSensor(void)
  */
 static retcode_t SubscribeToTopic(void)
 {
-    printf("Subscribing to topics DISABLED\n\r");
-    //retcode_t rc_subscribe = Mqtt_subscribe(SessionPtr, N_SUBSCRIBE_TOPICS, SubscribeTopics, SubscribeQos);
-    return RC_OK;
-    //rc_subscribe;
+    printf("Subscribing to topics: '%s', '%s'\n\r",
+        SubscribeTopic,
+        microfloReceiveTopic
+    );
+    retcode_t one = Mqtt_subscribe(SessionPtr, 1, SubscribeTopics, SubscribeQos);
+    if (one != RC_OK) {
+        return one;
+    } 
+    retcode_t two = Mqtt_subscribe(SessionPtr, 1, &SubscribeTopics[1], &SubscribeQos[1]);
+    return two;
 }
 
 /**
@@ -375,17 +381,17 @@ static void HandleEventConnection(
  * @param[in] publishData
  * Event Data for publish
  */
-static void HandleEventIncomingPublish(
+static void HandleEventIncomingData(
         MqttPublishData_T publishData)
 {
     char published_topic_buffer[COMMON_BUFFER_SIZE] = {0};
     char published_data_buffer[COMMON_BUFFER_SIZE] = {0};
     static int incoming_message_count = 0;
 
-    strncpy(published_data_buffer, (const char *)publishData.payload, sizeof(published_data_buffer));
+    strncpy(published_data_buffer, (const char *)publishData.sizeof(published_data_buffer));
     strncpy(published_topic_buffer, publishData.topic.start, sizeof(published_topic_buffer));
 
-    printf("publishing #%d : %s : %s \n\r",
+    printf("received #%d : %s : %s \n\r",
             incoming_message_count, published_topic_buffer, published_data_buffer);
     incoming_message_count++;
 }
@@ -439,7 +445,7 @@ static retcode_t EventHandler(MqttSession_T* session, MqttEvent_t event,
         HandleEventConnection(eventData->sl_Connect);
         break;
     case MQTT_INCOMING_PUBLISH:
-        HandleEventIncomingPublish(eventData->publish);
+        HandleEventIncomingData(eventData->publish);
         break;
     case MQTT_PUBLISHED_DATA:
 

@@ -77,7 +77,7 @@
  */
 #define PUBLISH_BUFFER_SIZE 256
 #define COMMON_BUFFER_SIZE 	PUBLISH_BUFFER_SIZE
-#define TOPIC_PREFIX		"public/bcx18/example"
+#define TOPIC_PREFIX		"public/bcx18"
 
 /**
  * PUBLISHTIMER_PERIOD_IN_MS is time for MQTT to publish the sensor data
