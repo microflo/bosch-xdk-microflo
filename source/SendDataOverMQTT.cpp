@@ -629,7 +629,7 @@ void AppInitSystem(void * cmdProcessorHandle, uint32_t param2)
     }
 
 
-    //CreateMicrofloTimer();
+    CreateMicrofloTimer();
 }
 
 } // end extern "C"
