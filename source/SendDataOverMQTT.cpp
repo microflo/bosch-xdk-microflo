@@ -85,7 +85,6 @@ public:
 
     // implements HostTransport
     virtual void setup(IO *i, HostCommunication *c) {
-        io = i;
         controller = c;
     }
     virtual void runTick() {
@@ -93,11 +92,16 @@ public:
         // FIXME: implement receiving
     }
     virtual void sendCommand(const uint8_t *buf, uint8_t len) {
-        microfloSendToHost(buf, len);
+        // Pad to a whole command
+        uint8_t cmd[MICROFLO_CMD_SIZE];
+        for (uint8_t i=0; i<MICROFLO_CMD_SIZE; i++) {
+            cmd[i] = (i < len) ?  buf[i] : 0x00;
+        }
+
+        microfloSendToHost(cmd, MICROFLO_CMD_SIZE);
     }
 
 private:
-    IO *io;
     HostCommunication *controller;
 };
 
@@ -107,7 +111,7 @@ private:
 /* local variables ********************************************************** */
 
 NullIO io;
-NullTransport transport;
+MqttHostTransport transport;
 FixedMessageQueue queue;
 Network network(&io, &queue);
 HostCommunication controller;
@@ -115,7 +119,7 @@ HostCommunication controller;
 static CmdProcessor_T *AppCmdProcessor;
 static CmdProcessor_T CmdProcessorHandleServalPAL;
 static MqttSession_T Session;
-static MqttSession_T *SessionPtr;
+static MqttSession_T *SessionPtr = 0;
 
 static char PublishBuffer[PUBLISH_BUFFER_SIZE];
 static uint8_t PublishInProgress = 0;
@@ -271,6 +275,11 @@ static retcode_t SubscribeToTopic(void)
 
 static void microfloSendToHost(const uint8_t *buf, size_t length) {
     memcpy(PublishBuffer, buf, length);
+
+    if (!SessionPtr) {
+        printf("cannot send, MQTT session not setup yet\n\r");
+        return;
+    }
 
     const retcode_t rc_publish = Mqtt_publish(SessionPtr, microfloSendTopicDescription,
             PublishBuffer, length, (uint8_t) MQTT_QOS_AT_MOST_ONE, false);
@@ -563,6 +572,8 @@ void AppInitSystem(void * cmdProcessorHandle, uint32_t param2)
     controller.setup(&network, &transport);
 
     MICROFLO_LOAD_STATIC_GRAPH((&controller), graph);
+
+    network.subscribeToPort(2, 0, true); // TEMP: to get some data produced when running
 
     if (cmdProcessorHandle == NULL)
     {
