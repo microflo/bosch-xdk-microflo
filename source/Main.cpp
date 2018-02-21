@@ -88,8 +88,17 @@ void ErrorHandlingFunc(Retcode_T error, bool isfromIsr)
     }
 }
 
+class Dummy {
+private:
+    int integer;
+public:
+    Dummy() : integer(0) {}
+};
+
 int main(void)
 {
+    Dummy d;
+
     /* Mapping Default Error Handling function */
     Retcode_T returnValue = Retcode_Initialize(ErrorHandlingFunc);
     if (RETCODE_OK == returnValue)
