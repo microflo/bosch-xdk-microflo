@@ -5,6 +5,9 @@
 # the xdk110 folder.
 BCDS_BASE_DIR ?= ../../..
 
+MICROFLO_GRAPHNAME=main
+MICROFLO=./node_modules/.bin/microflo
+
 # Macro to define Start-up method. change this macro to "CUSTOM_STARTUP" to have custom start-up.
 export BCDS_SYSTEM_STARTUP_METHOD = DEFAULT_STARTUP
 export BCDS_APP_NAME = SendDataOverMQTT
@@ -55,3 +58,10 @@ lint:
 	
 cdt:
 	$(MAKE) -C $(BCDS_BASE_DIR)/xdk110/Common -f application.mk cdt
+
+microflo_generate:
+	$(MICROFLO) generate --target=xdk --mainfile source/Main.cpp --components ./node_modules/microflo-core/components graphs/${MICROFLO_GRAPHNAME}.fbp build/main.cpp
+
+microflo_runtime:
+	$(MICROFLO) runtime --wait-connect 1 --graph graphs/${MICROFLO_GRAPHNAME}.fbp --componentmap build/${MICROFLO_GRAPHNAME}.component.map.json
+
