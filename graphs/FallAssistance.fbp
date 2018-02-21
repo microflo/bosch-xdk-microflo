@@ -1,0 +1,28 @@
+INPORT=detect.SENSITIVITY:SENSITIVITY
+INPORT=timeout.MILLISECONDS:TIMEOUT
+OUTPORT=send.OUT1:SENDHELP
+
+'100' -> readTimer(Timer) -> accel(ReadAccelerometer)
+'333' -> SENSITIVITY detect(DetectFall)
+accel X -> X detect
+accel Y -> Y detect
+accel Z -> Z detect
+
+'11' -> PIN needHelpLed(DigitalWrite)
+'12' -> PIN helpComingLed(DigitalWrite)
+
+'1' -> PIN confirm(DigitalRead)
+'2' -> PIN cancel(DigitalRead)
+
+detect -> FALL assistance(Assistance)
+assistance LED -> needHelpLed
+confirm -> CONFIRM assistance
+cancel -> CANCEL assistance
+assistance SEND -> send(Split)
+send OUT2 -> helpComingLed
+
+detect OUT -> timeout(WaitMillis)
+assistance CANCELED -> STOP timeout
+timeout OUT -> CONFIRM assistance
+
+'5000' -> MILLISECONDS timeout
