@@ -12,9 +12,9 @@ outports:
 microflo_component */
 class OutputNumber : public SingleOutputComponent {
 public:
-    virtual void process(Packet in, MicroFlo::PortId port) {
+    virtual void process(Packet in, MicroFlo::PortId port) { 
         if (in.isTick()) {
-            send((long)666, port);
+            send((long)666, OutputNumberPorts::OutPorts::out);
         }
     }
 };

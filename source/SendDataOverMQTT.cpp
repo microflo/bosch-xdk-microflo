@@ -591,15 +591,19 @@ static void InitializeExample(void)
 
 extern "C" {
 
+#ifndef MICROFLO_EMBED_GAPH
+//#error "no graph to load"
+// FIXME: should not be needed
+#define MICROFLO_EMBED_GAPH
+#endif
+
 void AppInitSystem(void * cmdProcessorHandle, uint32_t param2)
 {
 
     transport.setup(&io, &controller);
     controller.setup(&network, &transport);
-#if 0
-    MICROFLO_LOAD_STATIC_GRAPH((&controller), graph);
-#endif
 
+    MICROFLO_LOAD_STATIC_GRAPH((&controller), graph);
 
     if (cmdProcessorHandle == NULL)
     {
