@@ -232,14 +232,12 @@ static void PublishEnvironmentalData(void *param1, uint32_t param2)
     retcode_t rc_publish;
     Environmental_Data_T bme280 = ReadEnvironmentSensor();
 
-    const char *publish_format = "Environmental Data:\n"
-            "\tHumidity: %ld\n"
-            "\tPressure: %ld\n"
-            "\tTemperature: %ld\n";
+    const char *publish_format = "{\"humidity\": %ld, \"pressure\": %ld, \"temperature\": %ld }";
 
     int32_t length = snprintf((char *)PublishBuffer, PUBLISH_BUFFER_SIZE, publish_format,
             (long int) bme280.humidity, (long int) bme280.pressure,
             (long int) bme280.temperature);
+
 
     rc_publish = Mqtt_publish(SessionPtr, PublishTopicDescription,
             PublishBuffer, length, (uint8_t) MQTT_QOS_AT_MOST_ONE, false);
@@ -263,7 +261,7 @@ static void PublishEnvironmentalData(void *param1, uint32_t param2)
  */
 static void EnqueueMessagePublish(TimerHandle_t pxTimer)
 {
-    BCDS_UNUSED(pxTimer);
+    BCDS_UNUSED(pxTimer);;
 
     if (!PublishInProgress)
     {
@@ -300,12 +298,11 @@ static void CreateAndStartPublishingTimer(void)
     }
 }
 
-#if 1
 static void RunMicroflo(TimerHandle_t pxTimer)
 {
     BCDS_UNUSED(pxTimer);
 
-    printf("%s", "microflo run tick");
+    printf("%s", "microflo run tick\n\r");
 
     transport.runTick();
     network.runTick();
@@ -331,7 +328,6 @@ static void CreateMicrofloTimer(void)
         Retcode_RaiseError(RETCODE(RETCODE_SEVERITY_FATAL, RETCODE_TIMER_START_FAIL));
     }
 }
-#endif
 
 /**
  * @brief Mqtt connection event handler.
@@ -344,9 +340,7 @@ static void CreateMicrofloTimer(void)
 static void HandleEventConnection(
         MqttConnectionEstablishedEvent_T connectionData)
 {
-    printf("Connection Event:\n\r"
-            "\tServer Return Code: %d (0 for success)\n\r"
-            "\tReused Session Flag: %d\n\r",
+    printf("connected %d, %d\n\r",
             (int) connectionData.connectReturnCode,
             (int) connectionData.sessionPresentFlag);
     if (connectionData.connectReturnCode == 0)
@@ -371,17 +365,15 @@ static void HandleEventConnection(
 static void HandleEventIncomingPublish(
         MqttPublishData_T publishData)
 {
-    char published_topic_buffer[COMMON_BUFFER_SIZE];
-    char published_data_buffer[COMMON_BUFFER_SIZE];
+    char published_topic_buffer[COMMON_BUFFER_SIZE] = {0};
+    char published_data_buffer[COMMON_BUFFER_SIZE] = {0};
     static int incoming_message_count = 0;
 
     strncpy(published_data_buffer, (const char *)publishData.payload, sizeof(published_data_buffer));
     strncpy(published_topic_buffer, publishData.topic.start, sizeof(published_topic_buffer));
 
-    printf("#%d, Incoming Published Message:\n\r"
-            "\tTopic: %s\n\r"
-            "\tPayload: \n\r\"\"\"\n\r%s\n\r\"\"\"\n\r", incoming_message_count,
-            published_topic_buffer, published_data_buffer);
+    printf("publishing #%d : %s : %s \n\r",
+            incoming_message_count, published_topic_buffer, published_data_buffer);
     incoming_message_count++;
 }
 
