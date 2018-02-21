@@ -46,27 +46,26 @@
 
 /* local type and macro definitions */
 
-#warning Please enter WLAN configurations with valid SSID & WPA key in below Macros and remove this line to avoid warnings.
 /**
  * WIFI_SSID is the WIFI network name where user wants connect the XDK device.
  * Make sure to update the WIFI_SSID constant according to your required WIFI network.
  */
-#define WIFI_SSID 			"yourSSID"
+#define WIFI_SSID 			"jhaven"
 /**
  * WIFI_PW is the WIFI router WPA/WPA2 password used at the Wifi network connection.
  * Make sure to update the WIFI_PW constant according to your router password.
  */
-#define WIFI_PW				"yourPW"
+#define WIFI_PW				"abcdefgh"
 
 /**
  * Use an Broker Host address or an IP here
  */
-#define MQTT_BROKER_HOST	"yourBrokerHostIP" // use an address or an IP here
+#define MQTT_BROKER_HOST	"mqtt.bitraf.no" // use an address or an IP here
 
 /**
  * MQTT_BROKER_PORT is the MQTT server port number.
  */
-#define MQTT_BROKER_PORT	UINT16_C(0)
+#define MQTT_BROKER_PORT	UINT16_C(1883)
 
 /**
  * DEVICE_NAME is the device name
@@ -83,7 +82,7 @@
  */
 #define PUBLISH_BUFFER_SIZE 256
 #define COMMON_BUFFER_SIZE 	PUBLISH_BUFFER_SIZE
-#define TOPIC				"BCDS/XDK110/example/out"
+#define TOPIC				"public/bcx18/example/out"
 
 /**
  * PUBLISHTIMER_PERIOD_IN_MS is time for MQTT to publish the sensor data
@@ -115,11 +114,8 @@ enum App_Retcode_E
  *
  * @param[in] param2  Currently not used will be used in future
  */
-
 extern "C" {
-
 void AppInitSystem(void * CmdProcessorHandle, uint32_t param2);
-
 }
 
 #endif /* SENDDATAOVERMQTT_H_ */

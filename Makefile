@@ -11,6 +11,8 @@ export BCDS_APP_NAME = SendDataOverMQTT
 export BCDS_APP_DIR = $(CURDIR)
 export BCDS_APP_SOURCE_DIR = $(BCDS_APP_DIR)/source
 
+export XDK_FOTA_ENABLED_BOOTLOADER=1
+
 #Please refer BCDS_CFLAGS_COMMON variable in application.mk file
 #and if any addition flags required then add that flags only in the below macro 
 export BCDS_CFLAGS_COMMON = -fno-rtti -fno-exceptions
