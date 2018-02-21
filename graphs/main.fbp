@@ -1,4 +1,2 @@
-timer(Timer) OUT -> IN toggle(ToggleBoolean)
-toggle() OUT -> IN led(DigitalWrite)
-'300' -> INTERVAL timer()
-'13' -> PIN led()
+
+s(OutputNumber) -> b(Forward) -> c(Forward) -> p(Print)

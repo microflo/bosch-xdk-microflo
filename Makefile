@@ -27,7 +27,7 @@ export BCDS_XDK_INCLUDES = \
 	
 #List all the application source file under variable BCDS_XDK_APP_SOURCE_FILES in a similar pattern as below
 export BCDS_XDK_APP_SOURCE_FILES = \
-	$(BCDS_APP_SOURCE_DIR)/Main.cpp \
+	$(BCDS_APP_SOURCE_DIR)/../build/main.cpp \
 	
 .PHONY: clean debug release flash_debug_bin flash_release_bin
 
@@ -61,7 +61,7 @@ cdt:
 	$(MAKE) -C $(BCDS_BASE_DIR)/xdk110/Common -f application.mk cdt
 
 microflo_generate:
-	$(MICROFLO) generate --target=xdk --mainfile source/Main.cpp --components ./node_modules/microflo-core/components graphs/${MICROFLO_GRAPHNAME}.fbp build/main.cpp
+	$(MICROFLO) generate --target=xdk --mainfile $(BCDS_APP_SOURCE_DIR)/Main.cpp graphs/${MICROFLO_GRAPHNAME}.fbp build/main.cpp
 
 microflo_runtime:
 	$(MICROFLO) runtime --wait-connect 1 --graph graphs/${MICROFLO_GRAPHNAME}.fbp --componentmap build/${MICROFLO_GRAPHNAME}.component.map.json

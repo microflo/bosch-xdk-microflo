@@ -37,6 +37,10 @@
 
 /* module includes ********************************************************** */
 
+#include <microflo.h>
+#include <microflo.cpp>
+#include <io.hpp> // TEMP: using NullIO
+
 extern "C" {
 
 #include "XDKAppInfo.h"
@@ -67,11 +71,9 @@ extern "C" {
 
 }
 
-
-
-#include <microflo.h>
-#include <microflo.cpp>
-#include <io.hpp> // TEMP: using NullIO
+// XXX: these are defined by xdk110/Libraries/WiFi/3rd-party/TI/simplelink/include/socket.h
+#undef connect
+#undef send
 
 
 /* constant definitions ***************************************************** */
@@ -419,10 +421,10 @@ static retcode_t EventHandler(MqttSession_T* session, MqttEvent_t event,
     switch (event)
     {
     case MQTT_CONNECTION_ESTABLISHED:
-        HandleEventConnection(eventData->connect);
+        HandleEventConnection(eventData->sl_Connect);
         break;
     case MQTT_CONNECTION_ERROR:
-        HandleEventConnection(eventData->connect);
+        HandleEventConnection(eventData->sl_Connect);
         break;
     case MQTT_INCOMING_PUBLISH:
         HandleEventIncomingPublish(eventData->publish);

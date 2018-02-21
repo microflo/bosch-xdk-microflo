@@ -1,19 +1,22 @@
 /* microflo_component yaml
-name: Custom
-description: Custom does whatever you want
+name: Print
+description: Prints to stdout
 inports:
   in:
-    type: all
+    type: number
     description: ""
 outports:
   out:
-    type: all
+    type: number
     description: ""
 microflo_component */
-class Custom : public SingleOutputComponent {
+class Print : public SingleOutputComponent {
 public:
     virtual void process(Packet in, MicroFlo::PortId port) {
         if (in.isData()) {
+
+            printf("Print: %d\n\r", in.asInteger());
+
             send(in, port);
         }
     }
