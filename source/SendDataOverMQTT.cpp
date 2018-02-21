@@ -75,13 +75,39 @@ extern "C" {
 #undef connect
 #undef send
 
+static void microfloSendToHost(const uint8_t *buf, size_t length);
+
+class MqttHostTransport : public HostTransport {
+public:
+    MqttHostTransport() {
+        
+    }
+
+    // implements HostTransport
+    virtual void setup(IO *i, HostCommunication *c) {
+        io = i;
+        controller = c;
+    }
+    virtual void runTick() {
+        // no-op, everything happens event-oriented
+        // FIXME: implement receiving
+    }
+    virtual void sendCommand(const uint8_t *buf, uint8_t len) {
+        microfloSendToHost(buf, len);
+    }
+
+private:
+    IO *io;
+    HostCommunication *controller;
+};
+
 
 /* constant definitions ***************************************************** */
 
 /* local variables ********************************************************** */
 
 NullIO io;
-NullHostTransport transport;
+NullTransport transport;
 FixedMessageQueue queue;
 Network network(&io, &queue);
 HostCommunication controller;
@@ -215,6 +241,11 @@ static void InitEnvironmentalSensor(void)
     }
 }
 
+
+
+
+
+
 /**
  * @brief MQTT subscribe to own public topic
  *
@@ -234,31 +265,14 @@ static retcode_t SubscribeToTopic(void)
     return two;
 }
 
-/**
- * @brief To publish environmental data to MQTT
- *
- * @param[in] param1
- * Unused
- *
- * @param[in] param2
- * Unused
- */
-static void PublishEnvironmentalData(void *param1, uint32_t param2)
-{
-    BCDS_UNUSED(param1);
-    BCDS_UNUSED(param2);
-    retcode_t rc_publish;
-    Environmental_Data_T bme280 = ReadEnvironmentSensor();
 
-    const char *publish_format = "{\"humidity\": %ld, \"pressure\": %ld, \"temperature\": %ld }";
+//static void MicrofloSendToHost(void *param1, uint32_t param2) {
+//}
 
-    int32_t length = snprintf((char *)PublishBuffer, PUBLISH_BUFFER_SIZE, publish_format,
-            (long int) bme280.humidity, (long int) bme280.pressure,
-            (long int) bme280.temperature);
+static void microfloSendToHost(const uint8_t *buf, size_t length) {
+    memcpy(PublishBuffer, buf, length);
 
-
-    printf("publishing env data\n\r");
-    rc_publish = Mqtt_publish(SessionPtr, PublishTopicDescription,
+    const retcode_t rc_publish = Mqtt_publish(SessionPtr, microfloSendTopicDescription,
             PublishBuffer, length, (uint8_t) MQTT_QOS_AT_MOST_ONE, false);
     if (rc_publish == RC_OK)
     {
@@ -272,50 +286,6 @@ static void PublishEnvironmentalData(void *param1, uint32_t param2)
     }
 }
 
-/**
- * @brief Enqueue publish message to command processor for processing
- *
- * @param[in] pxTimer
- * Unused
- */
-static void EnqueueMessagePublish(TimerHandle_t pxTimer)
-{
-    BCDS_UNUSED(pxTimer);;
-
-    if (!PublishInProgress)
-    {
-        Retcode_T retcode = CmdProcessor_Enqueue(AppCmdProcessor, PublishEnvironmentalData, NULL, 0);
-        if (RETCODE_OK != retcode)
-        {
-            printf("CmdProcessor_Enqueue is failed \n\r");
-            Retcode_RaiseError(retcode);
-        }
-    }
-}
-
-/**
- * @brief Create and start software timer for MQTT publishing the sensor data
- *
- */
-static void CreateAndStartPublishingTimer(void)
-{
-    PublishTimerHandle = xTimerCreate(
-            (const char * const ) "Publish Timer",
-            (PUBLISHTIMER_PERIOD_IN_MS/portTICK_RATE_MS),
-            pdTRUE,
-            NULL,
-            EnqueueMessagePublish);
-    if(NULL == PublishTimerHandle)
-    {
-        printf("xTimerCreate is failed \n\r");
-        Retcode_RaiseError(RETCODE(RETCODE_SEVERITY_FATAL, RETCODE_OUT_OF_RESOURCES));
-    }
-    else if ( pdFAIL == xTimerStart(PublishTimerHandle, 10000))
-    {
-        printf("xTimerStart is failed \n\r");
-        Retcode_RaiseError(RETCODE(RETCODE_SEVERITY_FATAL, RETCODE_TIMER_START_FAIL));
-    }
-}
 
 static void RunMicroflo(TimerHandle_t pxTimer)
 {
@@ -348,16 +318,7 @@ static void CreateMicrofloTimer(void)
     }
 }
 
-/**
- * @brief Mqtt connection event handler.
- * Subscribe to own public topic if connection return code is zero from server
- *
- * @param[in] connectionData
- * Event Data for connection
- */
-
-static void HandleEventConnection(
-        MqttConnectionEstablishedEvent_T connectionData)
+static void HandleEventConnection(MqttConnectionEstablishedEvent_T connectionData)
 {
     printf("connected %d, %d\n\r",
             (int) connectionData.connectReturnCode,
@@ -375,14 +336,8 @@ static void HandleEventConnection(
 
 }
 
-/**
- * @brief Event handler for incoming publish MQTT data
- *
- * @param[in] publishData
- * Event Data for publish
- */
-static void HandleEventIncomingData(
-        MqttPublishData_T publishData)
+
+static void HandleEventIncomingData(MqttPublishData_T publishData)
 {
     char published_topic_buffer[COMMON_BUFFER_SIZE] = {0};
     char published_data_buffer[COMMON_BUFFER_SIZE] = {0};
@@ -396,15 +351,7 @@ static void HandleEventIncomingData(
     incoming_message_count++;
 }
 
-/**
- * @brief Event handler for successful publish
- *
- * @param[in] param1
- * Unused
- *
- * @param[in] param2
- * Unused
- */
+
 static void HandleEventSuccessfulPublish(void *param1, uint32_t param2)
 {
     BCDS_UNUSED(param1);
@@ -439,7 +386,6 @@ static retcode_t EventHandler(MqttSession_T* session, MqttEvent_t event,
     {
     case MQTT_CONNECTION_ESTABLISHED:
         HandleEventConnection(eventData->sl_Connect);
-        CreateAndStartPublishingTimer();
         break;
     case MQTT_CONNECTION_ERROR:
         HandleEventConnection(eventData->sl_Connect);
