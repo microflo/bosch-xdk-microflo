@@ -60,7 +60,7 @@
 /**
  * Use an Broker Host address or an IP here
  */
-#define MQTT_BROKER_HOST	"mqtt.bitraf.no" // use an address or an IP here
+#define MQTT_BROKER_HOST	"mqtt.bitraf.no"
 
 /**
  * MQTT_BROKER_PORT is the MQTT server port number.
@@ -73,16 +73,11 @@
 #define DEVICE_NAME			"XDK_MQTT_EXAMPLE"	//
 
 /**
- * USE_PUBLISH_TIMER is true then application publishes one message per second
- */
-#define USE_PUBLISH_TIMER 	true
-
-/**
  * PUBLISH_BUFFER_SIZE is buffer size of publish message
  */
 #define PUBLISH_BUFFER_SIZE 256
 #define COMMON_BUFFER_SIZE 	PUBLISH_BUFFER_SIZE
-#define TOPIC				"public/bcx18/example/out"
+#define TOPIC_PREFIX		"public/bcx18/example"
 
 /**
  * PUBLISHTIMER_PERIOD_IN_MS is time for MQTT to publish the sensor data

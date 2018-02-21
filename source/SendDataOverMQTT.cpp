@@ -97,11 +97,22 @@ static uint8_t PublishInProgress = 0;
 static TimerHandle_t PublishTimerHandle;
 static TimerHandle_t MicrofloTimerHandle;
 
-static const char *PublishTopic = TOPIC;
-static StringDescr_T PublishTopicDescription;
+static const char *PublishTopic = TOPIC_PREFIX"/out";
+static const char *SubscribeTopic = TOPIC_PREFIX"/in";
+static const char *microfloSendTopic = TOPIC_PREFIX"/microflo/send";
+static const char *microfloReceiveTopic = TOPIC_PREFIX"/microflo/receive";
 
-static StringDescr_T Topics[1];
-static Mqtt_qos_t Qos[1];
+static StringDescr_T PublishTopicDescription;
+static StringDescr_T SubscribeTopicDescription;
+static StringDescr_T microfloSendTopicDescription;
+static StringDescr_T microfloReceiveTopicDescription;
+
+const int N_SUBSCRIBE_TOPICS = 2;
+static StringDescr_T SubscribeTopics[N_SUBSCRIBE_TOPICS];
+static Mqtt_qos_t SubscribeQos[N_SUBSCRIBE_TOPICS] = {
+    MQTT_QOS_AT_MOST_ONE,
+    MQTT_QOS_AT_MOST_ONE,
+};
 
 static char MqttBroker[50];
 static const char MqttBrokerAddressFormat[50] = "mqtt://%s:%d";
@@ -209,13 +220,12 @@ static void InitEnvironmentalSensor(void)
  *
  * @return Based on status of #Mqtt_subscribe
  */
-static retcode_t SubscribeToOwnPublishTopic(void)
+static retcode_t SubscribeToTopic(void)
 {
-    int8_t topic_buffer[40];
-    strncpy((char *)topic_buffer, Topics[0].start, sizeof(topic_buffer));
-    printf("Subscribing to topic: %s, Qos: %d\n\r", topic_buffer, Qos[0]);
-    retcode_t rc_subscribe = Mqtt_subscribe(SessionPtr, 1, Topics, Qos);
-    return rc_subscribe;
+    printf("Subscribing to topics DISABLED\n\r");
+    //retcode_t rc_subscribe = Mqtt_subscribe(SessionPtr, N_SUBSCRIBE_TOPICS, SubscribeTopics, SubscribeQos);
+    return RC_OK;
+    //rc_subscribe;
 }
 
 /**
@@ -241,6 +251,7 @@ static void PublishEnvironmentalData(void *param1, uint32_t param2)
             (long int) bme280.temperature);
 
 
+    printf("publishing env data\n\r");
     rc_publish = Mqtt_publish(SessionPtr, PublishTopicDescription,
             PublishBuffer, length, (uint8_t) MQTT_QOS_AT_MOST_ONE, false);
     if (rc_publish == RC_OK)
@@ -314,7 +325,7 @@ static void CreateMicrofloTimer(void)
 {
     MicrofloTimerHandle = xTimerCreate(
             (const char * const ) "MicroFlo Timer",
-            (100/portTICK_RATE_MS),
+            (1000/portTICK_RATE_MS),
             pdTRUE,
             NULL,
             RunMicroflo);
@@ -347,7 +358,7 @@ static void HandleEventConnection(
             (int) connectionData.sessionPresentFlag);
     if (connectionData.connectReturnCode == 0)
     {
-        retcode_t rc = SubscribeToOwnPublishTopic();
+        retcode_t rc = SubscribeToTopic();
         if(RC_OK != rc)
         {
             printf("SubscribeToOwnPublishTopic is failed\n\r");
@@ -417,11 +428,12 @@ static retcode_t EventHandler(MqttSession_T* session, MqttEvent_t event,
 {
     BCDS_UNUSED(session);
     Retcode_T retcode = RETCODE_OK;
-    printf("EventHandler Event : %d\n\r", (int)event);
+
     switch (event)
     {
     case MQTT_CONNECTION_ESTABLISHED:
         HandleEventConnection(eventData->sl_Connect);
+        CreateAndStartPublishingTimer();
         break;
     case MQTT_CONNECTION_ERROR:
         HandleEventConnection(eventData->sl_Connect);
@@ -442,15 +454,6 @@ static retcode_t EventHandler(MqttSession_T* session, MqttEvent_t event,
         printf("MQTT_SUBSCRIBE_SEND_FAILED\n\r");
         break;
     case MQTT_SUBSCRIPTION_ACKNOWLEDGED:
-        if (USE_PUBLISH_TIMER)
-        {
-            CreateAndStartPublishingTimer();
-        }
-        else
-        {
-            // send data only once
-            PublishEnvironmentalData(NULL, 0);
-        }
         printf("MQTT_SUBSCRIPTION_ACKNOWLEDGED\n\r");
         break;
     case MQTT_CONNECT_TIMEOUT:
@@ -553,8 +556,12 @@ static void ConfigureSession(void)
 
                 // set publish and subscribe Topics as StringDescr
                 StringDescr_wrap(&PublishTopicDescription, (const char *)PublishTopic);
-                StringDescr_wrap(&(Topics[0]), PublishTopic);
-                Qos[0] = MQTT_QOS_AT_MOST_ONE;
+                StringDescr_wrap(&SubscribeTopicDescription, (const char *)SubscribeTopic);
+                StringDescr_wrap(&microfloSendTopicDescription, (const char *)microfloSendTopic);
+                StringDescr_wrap(&microfloReceiveTopicDescription, (const char *)microfloReceiveTopic);
+
+                StringDescr_wrap(&(SubscribeTopics[0]), SubscribeTopic);
+                StringDescr_wrap(&(SubscribeTopics[1]), microfloReceiveTopic);
             }
         }
     }
