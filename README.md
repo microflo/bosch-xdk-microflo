@@ -14,7 +14,8 @@ Note: Needs https://github.com/microflo/microflo/pull/175 to support live-progra
 ## TODO
 
 * Write some useful/fun components for XDK
-* Realize demo graph
+* Build demo graph
+* Collect and publish necessary SDK patches 
 
 ## Building
 

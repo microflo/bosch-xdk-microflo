@@ -1,4 +1,8 @@
 
+extern "C" {
+#include "BSP_BoardType.h"
+#include "BCDS_BSP_Button.h"
+}
 
 enum ButtonError {
     ButtonSuccess = 0,
@@ -7,7 +11,12 @@ enum ButtonError {
     ButtonErrorEnable,
 };
 
-void ButtonCallback(uint32_t data);
+void Button1Callback(uint32_t data);
+void Button2Callback(uint32_t data);
+
+// XXX: NASTY HACK
+class Button;
+Button *g_buttons[2] = {0};
 
 /* microflo_component yaml
 name: Button
@@ -52,7 +61,7 @@ public:
     }
 
     void sendData(bool s) {
-        send(s, OutPorts::out);
+        send(s, ButtonPorts::OutPorts::out);
     }
 
 private:
@@ -87,8 +96,6 @@ private:
     bool initialized;
 };
 
-// XXX: NASTY HACK
-Button *g_buttons[2] = {0};
 
 void Button1Callback(uint32_t data)
 {
@@ -105,4 +112,3 @@ void Button2Callback(uint32_t data)
     }
 }
 
-#endif
