@@ -80,6 +80,8 @@ private:
         if (RETCODE_OK != switched) {
             return LedErrorSet;
         }
+
+        return LedSuccess;
     }
 
 private:
