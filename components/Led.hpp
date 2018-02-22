@@ -21,7 +21,7 @@ inports:
     description: "LED on/off"
   pin:
     type: integer
-    description: "Which LED to control (0,1,2)"
+    description: "Which LED to control (1,2,3)"
 outports:
   out:
     type: boolean
@@ -56,10 +56,10 @@ public:
 
 private:
     LedError setLed(bool state) {
-        if (led < 0) {
+        if (led <= 0) {
             return LedErrorInvalidLed;
         }
-        if (led > 2) {
+        if (led > 3) {
             return LedErrorInvalidLed;
         }
 

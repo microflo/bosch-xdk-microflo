@@ -1,4 +1,9 @@
 
-s(Forward) -> b(Forward) -> c(Forward) -> p(Print)
+# Forwarding test
+#s(Forward) -> b(Forward) -> c(Forward) -> p(Print)
+#'123' -> s
 
-'123' -> s
+# Led test
+'3' -> PIN led(Led)
+'true' -> a(Forward) -> led
+led ERROR -> p(Print)
