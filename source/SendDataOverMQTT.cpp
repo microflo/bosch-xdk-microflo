@@ -300,7 +300,7 @@ static void RunMicroflo(TimerHandle_t pxTimer)
 {
     BCDS_UNUSED(pxTimer);
 
-    printf("%s", "microflo run tick\n\r");
+    printf("%s", ".");
 
     transport.runTick();
     network.runTick();
@@ -310,7 +310,7 @@ static void CreateMicrofloTimer(void)
 {
     MicrofloTimerHandle = xTimerCreate(
             (const char * const ) "MicroFlo Timer",
-            (1000/portTICK_RATE_MS),
+            (100/portTICK_RATE_MS),
             pdTRUE,
             NULL,
             RunMicroflo);

@@ -15,3 +15,22 @@ Note: Needs https://github.com/microflo/microflo/pull/175 to support live-progra
 
 * Write some useful/fun components for XDK
 * Realize demo graph
+
+## Building
+
+Configure according to your installation
+
+    export XDK=/home/jon/XDK/XDK
+
+Build and flash
+
+    export BCDS_BASE_DIR=${XDK_DIR}/SDK
+    export BCDS_TOOL_CHAIN_PATH=${XDK_DIR}/armGCC/bin/
+    make clean microflo_generate debug flash_debug_bin
+
+
+## Connect from Flowhub
+
+    make microflo_runtime
+
+Open the LIVE url that is shown in browser
