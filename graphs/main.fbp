@@ -4,6 +4,21 @@
 #'123' -> s
 
 # Led test
-'3' -> PIN led(Led)
-'true' -> a(Forward) -> led
-led ERROR -> p(Print)
+'1' -> PIN red(Led)
+'2' -> PIN orange(Led)
+'3' -> PIN yellow(Led)
+
+# FIXME: only last value respected? due to setup/enable or switch??
+#'true' -> orange
+#'true' -> red
+#'true' -> yellow
+
+'1' -> BUTTON button(Button)
+'true' -> ENABLE button
+button -> yellow
+
+#'true' -> s(Split) OUT1 -> yellow
+#s OUT2 -> orange
+#s OUT3 -> red
+
+# led ERROR -> p(Print)

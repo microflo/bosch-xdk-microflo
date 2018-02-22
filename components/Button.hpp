@@ -50,7 +50,6 @@ public:
         } else if (port == InPorts::enable) {
             const bool enabled = in.asBool();
             // TODO: implement disable
-
             const ButtonError err = enableButtonRead();
             if (err == ButtonSuccess) {
                 //send(true, OutPorts::out);
@@ -79,12 +78,12 @@ private:
         }
 
         const Retcode_T connected = BSP_Button_Connect();
-        if (RETCODE_OK == connected) {
+        if (RETCODE_OK != connected) {
             return ButtonErrorConnect;
         }
         const Retcode_T enabled = BSP_Button_Enable((uint32_t)button,
                                         (button == 1) ? Button1Callback : Button2Callback);
-        if (RETCODE_OK == enabled) {
+        if (RETCODE_OK != enabled) {
             return ButtonErrorConnect;
         }
         g_buttons[button-1] = this;
