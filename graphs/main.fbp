@@ -13,9 +13,11 @@
 #'true' -> red
 #'true' -> yellow
 
-'1' -> BUTTON button(Button)
-'true' -> ENABLE button
-button -> yellow
+'1' -> BUTTON buttonA(Button), 'true' -> ENABLE buttonA
+'2' -> BUTTON buttonB(Button), 'true' -> ENABLE buttonB
+
+buttonA -> yellow
+buttonB -> yellow
 
 #'true' -> s(Split) OUT1 -> yellow
 #s OUT2 -> orange
