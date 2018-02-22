@@ -7,6 +7,8 @@ enum ButtonError {
     ButtonErrorEnable,
 };
 
+void ButtonCallback(uint32_t data);
+
 /* microflo_component yaml
 name: Button
 description: Forward a packet from input to output
@@ -29,6 +31,7 @@ class Button : public SingleOutputComponent {
 public:
     Button()
         : button(-1)
+        , initialized(false)
     {}
 
     virtual void process(Packet in, MicroFlo::PortId port) {
@@ -41,36 +44,64 @@ public:
 
             const ButtonError err = enableButtonRead();
             if (err == ButtonSuccess) {
-                send(true, OutPorts::out);
+                //send(true, OutPorts::out);
             } else {
                 send((long)err, OutPorts::error);
             }
         }
     }
 
+    void sendData(bool s) {
+        send(s, OutPorts::out);
+    }
+
 private:
     ButtonError enableButtonRead() {
+        if (button < 0) {
+            return ButtonErrorInvalidButton;
+        }
+        if (button > 2) {
+            return ButtonErrorInvalidButton;
+        }
 
+        if (initialized) {
+            // Already initialized
+            return ButtonSuccess;
+        }
 
+        const Retcode_T connected = BSP_Button_Connect();
+        if (RETCODE_OK == connected) {
+            return ButtonErrorConnect;
+        }
+        const Retcode_T enabled = BSP_Button_Enable((uint32_t)button,
+                                        (button == 1) ? Button1Callback : Button2Callback);
+        if (RETCODE_OK == enabled) {
+            return ButtonErrorConnect;
+        }
+        g_buttons[button-1] = this;
+
+        return ButtonSuccess;
     }
 private:
     int8_t button;
+    bool initialized;
 };
 
-#if 0
-    Retcode_T returnVal = RETCODE_OK;
-    returnVal = BSP_Button_Connect();
-    if (RETCODE_OK == returnVal)
-    {
-        returnVal = BSP_Button_Enable((uint32_t) BSP_XDK_BUTTON_1, Button1Callback);
-    }
+// XXX: NASTY HACK
+Button *g_buttons[2] = {0};
 
-void ButtonCallback(uint32_t data)
+void Button1Callback(uint32_t data)
 {
-    Retcode_T returnValue = CmdProcessor_EnqueueFromIsr(AppCmdProcessor, processButton1Data, NULL, data);
-    if (RETCODE_OK != returnValue)
-    {
-        printf("Enqueuing for Button 1 callback failed\n\r");
+    Button *b = g_buttons[0];
+    if (b) {
+        b->sendData(data == BSP_XDK_BUTTON_PRESS);
+    }
+}
+void Button2Callback(uint32_t data)
+{
+    Button *b = g_buttons[1];
+    if (b) {
+        b->sendData(data == BSP_XDK_BUTTON_PRESS);
     }
 }
 
