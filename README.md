@@ -9,10 +9,9 @@ to quickly and easily implement on-edge logic.
 Note: The SDK for Bosch XDK does not come with C++ support out-of-the-box,
 so we need to modify it a bit.
 
+Note: Needs https://github.com/microflo/microflo/pull/175 to support live-programming
 
 ## TODO
 
-* Load microflo graphs+components
-* Write some useful components for XDK
-* Implement HostTransport, so can reprogram the device. Serial or MQTT
+* Write some useful/fun components for XDK
 * Realize demo graph

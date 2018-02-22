@@ -64,5 +64,5 @@ microflo_generate:
 	$(MICROFLO) generate --target=xdk --mainfile $(BCDS_APP_SOURCE_DIR)/Main.cpp graphs/${MICROFLO_GRAPHNAME}.fbp build/main.cpp
 
 microflo_runtime:
-	$(MICROFLO) runtime --wait-connect 1 --graph graphs/${MICROFLO_GRAPHNAME}.fbp --componentmap build/${MICROFLO_GRAPHNAME}.component.map.json
+	$(MICROFLO) runtime --serial mqtt://mqtt.bitraf.no/public/bcx18/microflo/ --wait-connect 1 --graph graphs/${MICROFLO_GRAPHNAME}.fbp --componentmap build/${MICROFLO_GRAPHNAME}.component.map.json
 
