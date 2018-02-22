@@ -1,10 +1,13 @@
 /* microflo_component yaml
 name: Timer
-description: Forward a packet from input to output
+description: Fire event every @millis
 inports:
   enable:
     type: boolean
     description: "Enable/disable the timer"
+  millis:
+    type: integer
+    description: "How often to fire"
 outports:
   out:
     type: bang

@@ -14,7 +14,7 @@ enum LedError {
 
 /* microflo_component yaml
 name: Led
-description: Forward a packet from input to output
+description: Control on-board LEDs
 inports:
   in:
     type: boolean

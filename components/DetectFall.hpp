@@ -1,6 +1,6 @@
 /* microflo_component yaml
 name: DetectFall
-description: Forward a packet from input to output
+description: Detect a fall from accelerometer data
 inports:
   x:
     type: all

@@ -20,7 +20,7 @@ Button *g_buttons[2] = {0};
 
 /* microflo_component yaml
 name: Button
-description: Forward a packet from input to output
+description: Get button state
 inports:
   enable:
     type: bool

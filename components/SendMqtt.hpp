@@ -1,22 +1,16 @@
 /* microflo_component yaml
-name: ReadAccelerometer
-description: Read accelerometer data
+name: SendMqtt
+description: Send message on MQTT
 inports:
   in:
-    type: bang
+    type: all
     description: ""
 outports:
-  x:
-    type: integer
-    description: ""
-  y:
-    type: integer
-    description: ""
-  z:
-    type: integer
+  out:
+    type: all
     description: ""
 microflo_component */
-class ReadAccelerometer : public SingleOutputComponent {
+class SendMqtt : public SingleOutputComponent {
 public:
     virtual void process(Packet in, MicroFlo::PortId port) {
         if (in.isData()) {
