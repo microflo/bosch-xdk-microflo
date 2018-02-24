@@ -1,6 +1,7 @@
 /* microflo_component yaml
 name: SendMqtt
 description: Send message on MQTT
+icon: "send-o"
 inports:
   in:
     type: all

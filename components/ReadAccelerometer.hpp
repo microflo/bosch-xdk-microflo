@@ -1,6 +1,7 @@
 /* microflo_component yaml
 name: ReadAccelerometer
 description: Read accelerometer data
+icon: "arrows"
 inports:
   in:
     type: bang
