@@ -21,6 +21,7 @@ Button *g_buttons[2] = {0};
 /* microflo_component yaml
 name: Button
 description: Get button state
+icon: "toggle-on"
 inports:
   enable:
     type: bool

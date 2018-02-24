@@ -1,6 +1,7 @@
 /* microflo_component yaml
 name: Timer
 description: Fire event every @millis
+icon: "clock-o"
 inports:
   enable:
     type: boolean

@@ -15,6 +15,7 @@ enum LedError {
 /* microflo_component yaml
 name: Led
 description: Control on-board LEDs
+icon: "lightbulb-o"
 inports:
   in:
     type: boolean

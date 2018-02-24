@@ -1,6 +1,7 @@
 /* microflo_component yaml
 name: DetectFall
 description: Detect a fall from accelerometer data
+icon: "warning"
 inports:
   x:
     type: all
