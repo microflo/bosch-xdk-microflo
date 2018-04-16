@@ -1,0 +1,15 @@
+diff -u -w -r xdk-orig/SDK/xdk110/Libraries/WiFi/3rd-party/TI/simplelink/include/simplelink.h xdk-mod/SDK/xdk110/Libraries/WiFi/3rd-party/TI/simplelink/include/simplelink.h
+--- xdk-orig/SDK/xdk110/Libraries/WiFi/3rd-party/TI/simplelink/include/simplelink.h	2018-01-23 06:38:32.000000000 +0100
++++ xdk-mod/SDK/xdk110/Libraries/WiFi/3rd-party/TI/simplelink/include/simplelink.h	2018-04-16 23:11:41.837689538 +0200
+@@ -368,11 +368,6 @@
+ typedef _i16   _SlDataSize_t;
+ typedef _i16   _SlReturnVal_t;
+ 
+-#ifdef    __cplusplus
+-}
+-#endif /*  __cplusplus */
+-
+-
+ 
+ /*
+  * This event status used to  block or continue the event propagation

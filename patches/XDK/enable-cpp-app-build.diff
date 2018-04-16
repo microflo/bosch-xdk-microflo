@@ -1,0 +1,53 @@
+diff -u -r xdk-orig/SDK/xdk110/Common/application.mk xdk-mod/SDK/xdk110/Common/application.mk
+--- xdk-orig/SDK/xdk110/Common/application.mk	2018-02-19 19:41:52.000000000 +0100
++++ xdk-mod/SDK/xdk110/Common/application.mk	2018-04-16 23:28:58.825087255 +0200
+@@ -146,10 +146,12 @@
+ # Build chain settings
+ ifneq ("$(wildcard $(BCDS_TOOL_CHAIN_PATH))","")
+ CC = $(BCDS_TOOL_CHAIN_PATH)/arm-none-eabi-gcc
++CXX = $(BCDS_TOOL_CHAIN_PATH)/arm-none-eabi-g++
+ AR = $(BCDS_TOOL_CHAIN_PATH)/arm-none-eabi-ar
+ OBJCOPY = $(BCDS_TOOL_CHAIN_PATH)/arm-none-eabi-objcopy
+ else
+ CC = arm-none-eabi-gcc
++CXX = arm-none-eabi-g++
+ AR = arm-none-eabi-ar
+ OBJCOPY = arm-none-eabi-objcopy
+ endif
+@@ -291,7 +293,11 @@
+ BCDS_XDK_PLATFORM_C_OBJECT_FILES = $(subst $(BCDS_XDK_COMMON_PATH)/,,$(BCDS_XDK_PLATFORM_COMMOM_C_OBJECT_FILES))
+ BCDS_XDK_APP_S_OBJECT_FILES = $(BCDS_XDK_APP_STARTUP_FILES:.S=.o)
+ BCDS_XDK_APP_C_OBJECT_FILES = $(patsubst $(BCDS_APP_SOURCE_DIR)/%.c, %.o, $(BCDS_XDK_APP_SOURCE_FILES))
+-BCDS_XDK_APP_OBJECT_FILES =  $(BCDS_XDK_PLATFORM_C_OBJECT_FILES) $(BCDS_XDK_APP_C_OBJECT_FILES) $(BCDS_XDK_APP_S_OBJECT_FILES) 
++BCDS_XDK_APP_CXX_OBJECT_FILES = $(patsubst $(BCDS_APP_SOURCE_DIR)/%.cpp, %.o, $(BCDS_XDK_APP_SOURCE_FILES))
++# TODO $(BCDS_XDK_APP_C_OBJECT_FILES) should be included in line below, but without .cpp files
++BCDS_XDK_APP_OBJECT_FILES =  $(BCDS_XDK_PLATFORM_C_OBJECT_FILES) $(BCDS_XDK_APP_CXX_OBJECT_FILES) $(BCDS_XDK_APP_S_OBJECT_FILES)
++
++
+ BCDS_XDK_APP_OBJECT_FILES_DEBUG = $(addprefix $(BCDS_XDK_APP_DEBUG_OBJECT_DIR)/, $(BCDS_XDK_APP_OBJECT_FILES))
+ 
+ # Release Object files list for building XDK application
+@@ -346,7 +352,14 @@
+ 	@echo $(BCDS_XDK_APP_PATH)
+ 	@echo "Building file $<"
+ 	@$(CC) $(DEPEDENCY_FLAGS) $(BCDS_CFLAGS_DEBUG_COMMON) $(BCDS_XDK_INCLUDES) $(BCDS_XDK_EXT_INCLUDES) -DBCDS_PACKAGE_ID=$(BCDS_PACKAGE_ID) -c $< -o $@
++
++$(BCDS_XDK_APP_DEBUG_OBJECT_DIR)/%.o: $(BCDS_APP_SOURCE_DIR)/%.cpp 
++	@mkdir -p $(@D)
++	@echo $(BCDS_XDK_APP_PATH)
++	@echo "Building file $<"
++	@$(CXX) $(DEPEDENCY_FLAGS) $(BCDS_CFLAGS_DEBUG_COMMON) $(BCDS_XDK_INCLUDES) $(BCDS_XDK_EXT_INCLUDES) -DBCDS_PACKAGE_ID=$(BCDS_PACKAGE_ID) -c $< -o $@
+ 	
++
+ $(BCDS_XDK_APP_DEBUG_OBJECT_DIR)/%.o: %.S
+ 	@mkdir -p $(@D)
+ 	@echo "Assembling $<"
+@@ -354,7 +367,7 @@
+ 	
+ $(BCDS_XDK_APP_DEBUG_DIR)/$(BCDS_APP_NAME).out: $(BCDS_LIBS_DEBUG) $(BCDS_XDK_APP_OBJECT_FILES_DEBUG) 
+ 	@echo "Creating .out $@"
+-	@$(CC) $(LDFLAGS_DEBUG) $(BCDS_XDK_APP_OBJECT_FILES_DEBUG) $(BCDS_DEBUG_LIBS_GROUP) $(LIBS) -o $@
++	@$(CXX) $(LDFLAGS_DEBUG) $(BCDS_XDK_APP_OBJECT_FILES_DEBUG) $(BCDS_DEBUG_LIBS_GROUP) $(LIBS) -o $@
+ 	
+ $(BCDS_XDK_APP_DEBUG_DIR)/$(BCDS_APP_NAME).bin: $(BCDS_XDK_APP_DEBUG_DIR)/$(BCDS_APP_NAME).out
+ 	@echo "Boot flag value is $(XDK_FOTA_ENABLED_BOOTLOADER)"
